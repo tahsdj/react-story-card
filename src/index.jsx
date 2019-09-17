@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from "react"
 import styled from 'styled-components'
 import Container from './components/container'
+import Screen from './components/screen'
 
 const StoryCardWrapper = styled.div`
     display: inline-flex;
+    position: relative;
     width: 400px;
     height: 100vh;
     max-width: 100vw;
@@ -11,25 +13,16 @@ const StoryCardWrapper = styled.div`
     border: 1px solid gray;
 `
 
-// const useDurationState = (initialState) => {
-//     const [storyIndex, setStoryIndex] = useState(initialState.storyIndex)
-//     const [duration, setDuration] = useState(initialState.duration)
-//     const setState = () => {
-
-//     }
-//     return 
-// }
-
 const StoryCard = ({stories}) => {
 
-    // const [storyIndex, setStoryIndex] = useState(-1)
-    // const [duration, setDuration] = useState(-1)
     const [isPlaying, setPlaying] = useState(true)
     const [durationState, setDurationState] = useState({
         storyIndex: -1,
         duration: -1
     })
     const {storyIndex, duration} = durationState
+    const durationPerStory = 3
+
     useEffect(()=>{
         
         // when component mount, start timer
@@ -49,7 +42,6 @@ const StoryCard = ({stories}) => {
     const timerHandler = (delay) => {
         setDurationState( prev => {
             const {duration, storyIndex} = prev
-            const durationPerStory = 3
             const increasement = delay / 1000
 
             // initial condition
@@ -70,6 +62,13 @@ const StoryCard = ({stories}) => {
             }
         })
     }
+
+    const next = () => setDurationState(prev=>{
+        return prev.storyIndex === stories.length -1 ? {duration: 0, storyIndex: 0} : {duration: (prev.storyIndex+1)*durationPerStory, storyIndex: prev.storyIndex+1}
+    })
+    const back = () => setDurationState(prev=>{
+        return prev.storyIndex === 0 ? {...prev} : {duration: (prev.storyIndex-1)*durationPerStory, storyIndex: prev.storyIndex-1}
+    })
     
     return (
         <StoryCardWrapper>
@@ -77,6 +76,10 @@ const StoryCard = ({stories}) => {
                 stories={stories}
                 storyIndex={storyIndex}
                 duration={duration}
+            />
+            <Screen
+                onNext={next}
+                onBack={back}
             />
         </StoryCardWrapper>
     )
