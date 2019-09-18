@@ -15,12 +15,13 @@ const StoryCardWrapper = styled.div`
 
 const StoryCard = ({stories}) => {
 
-    const [isPlaying, setPlaying] = useState(true)
+    // const [isPlaying, setPlaying] = useState(true)
     const [durationState, setDurationState] = useState({
         storyIndex: -1,
-        duration: -1
+        duration: -1,
+        isPlaying: true
     })
-    const {storyIndex, duration} = durationState
+    const {storyIndex, duration, isPlaying} = durationState
     const durationPerStory = 3
 
     useEffect(()=>{
@@ -45,41 +46,54 @@ const StoryCard = ({stories}) => {
             const increasement = delay / 1000
 
             // initial condition
-            if ( duration < 0 && storyIndex < 0 ) return { storyIndex: 0, duration: 0}
+            if ( duration < 0 && storyIndex < 0 ) return { ...prev, storyIndex: 0, duration: 0}
 
-            // if in one cycle, keep counting on timer
-            if ( (duration + increasement) < stories.length*durationPerStory) {
-                // if it will change to next story
-                if ( Math.floor((duration + increasement) / durationPerStory) > Math.floor(duration / durationPerStory) ){
-                    return { storyIndex: storyIndex+1, duration: duration + increasement}
+            if ( prev.isPlaying ) {
+                // if in one cycle, keep counting on timer
+                if ( (duration + increasement) < stories.length*durationPerStory) {
+                    // if it will change to next story
+                    if ( Math.floor((duration + increasement) / durationPerStory) > Math.floor(duration / durationPerStory) ){
+                        return { ...prev, storyIndex: storyIndex+1, duration: duration + increasement}
+                    } else {
+                        // default, increase the timer
+                        return {...prev, duration: duration + increasement}
+                    }
                 } else {
-                    // default, increase the timer
-                    return {...prev, duration: duration + increasement}
+                    // back to first story
+                    return {...prev, storyIndex: 0, duration: 0}
                 }
-            } else {
-                // back to first story
-                return {storyIndex: 0, duration: 0}
-            }
+            } else return {...prev}
         })
     }
 
     const next = () => setDurationState(prev=>{
-        return prev.storyIndex === stories.length -1 ? {duration: 0, storyIndex: 0} : {duration: (prev.storyIndex+1)*durationPerStory, storyIndex: prev.storyIndex+1}
+        const newDuration = (prev.storyIndex+1)*durationPerStory
+        return prev.storyIndex === stories.length - 1 ? 
+            {...prev, duration: 0, storyIndex: 0} : {...prev, duration: newDuration, storyIndex: prev.storyIndex+1}
     })
     const back = () => setDurationState(prev=>{
-        return prev.storyIndex === 0 ? {...prev} : {duration: (prev.storyIndex-1)*durationPerStory, storyIndex: prev.storyIndex-1}
+        const newDuration = (prev.storyIndex-1)*durationPerStory
+        return prev.storyIndex === 0 ? 
+            {...prev} : {...prev, duration: newDuration, storyIndex: prev.storyIndex-1}
     })
-    
+
+    const pause = () => setDurationState( prev => ({...prev, isPlaying: false}) )
+    const play = () => setDurationState( prev => ({...prev, isPlaying: true}) )
+
     return (
         <StoryCardWrapper>
             <Container
                 stories={stories}
                 storyIndex={storyIndex}
                 duration={duration}
+                isPlaying={isPlaying}
+                durationPerStory={durationPerStory}
             />
             <Screen
-                onNext={next}
-                onBack={back}
+                next={next}
+                back={back}
+                pause={pause}
+                play={play}
             />
         </StoryCardWrapper>
     )

@@ -10,18 +10,22 @@ const HeaderWrapper = styled.header`
     justify-content: space-between;
 `
 
-const Header = ({stories, storyIndex}) => (
+const Header = ({stories, storyIndex, isPlaying, duration, durationPerStory}) => (
     <HeaderWrapper>
         { stories.map( (val,index) => {
             const currentIndex = storyIndex
-            switch (true) {
-                case index < currentIndex:
-                    return <Bar type={1} />
-                case index === currentIndex:
-                    return <Bar type={2} />
-                case index > currentIndex:
-                    return <Bar type={0}/>
-            }
+            // const percentage = ((duration%durationPerStory)/durationPerStory)*100
+            // console.log('percentage: ', percentage)
+                switch (true) {
+                    case index < currentIndex:
+                        return <Bar type={1} />
+                    case index === currentIndex && isPlaying:
+                        return <Bar type={2} />
+                    case index === currentIndex && !isPlaying:
+                        return <Bar type={3} />
+                    case index > currentIndex:
+                        return <Bar type={0}/>
+                }
         })}
     </HeaderWrapper>
 )
@@ -48,7 +52,8 @@ const BarWrapper = styled.div`
 
 const ProgressBar = styled.div`
     display: flex;
-    animation: ${props=> props.type == 2 ? progressAnimation : null} 3s linear;
+    animation: ${props=> props.type == 2 || props.type == 3? progressAnimation : null} 3s linear;
+    animation-play-state: ${props=>props.type == 3 ? 'paused': 'none'};
     width: ${ props => {
         switch(props.type) {
             case 0:
@@ -57,16 +62,18 @@ const ProgressBar = styled.div`
                 return '100%'
             case 2:
                 return '100%'
+            // case 3:
+            //     return `${props.percentage}%`
         }
     }};
     height: 100%;
     background-color: white;
 `
 
-const Bar = ( {type}) => {
+const Bar = ({type, percentage}) => {
     return (
         <BarWrapper>
-            <ProgressBar type={type} />
+            <ProgressBar type={type} percentage={percentage}/>
         </BarWrapper>
     )
 }

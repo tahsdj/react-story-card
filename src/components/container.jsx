@@ -16,7 +16,9 @@ const ContainerWrapper = styled.div`
 const Container = ({
     stories, 
     storyIndex,
-    duration
+    duration,
+    isPlaying,
+    durationPerStory
 }) => {
     const currentStory = stories[storyIndex]
     // console.log('redenr container')
@@ -26,6 +28,8 @@ const Container = ({
                 stories={stories} 
                 duration={duration}
                 storyIndex={storyIndex}
+                isPlaying={isPlaying}
+                durationPerStory={durationPerStory}
                 />
             <Story {...currentStory} />
         </ContainerWrapper>
