@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useRef} from "react"
 import styled from 'styled-components'
 import { setInterval } from "timers";
 
@@ -22,23 +22,21 @@ const RightButton = styled.div`
     height: 100%;
 `
 
-const Screen = ({next,back,pause,play}) => {
+const Screen = React.memo(({next,back,pause,play}) => {
 
     const [isPaused, setPause] = useState(false)
-    const [timer, setTimer] = useState(null)
+    const timer = useRef(null)
+
     const pressDownHandler = e => {
-        // avoid trigger the click of turn back and turn next
-        
-        const t = setTimeout(()=>{
-            setPause(true)
-            pause()
-        },200)
-        setTimer(t)
+        timer.current = setTimeout(()=>{
+                setPause(true)
+                pause()
+            },300)
     }
     const pressUpHandler = e => {
-        if (timer) {
-            clearTimeout(timer)
-            setTimer(null)
+        if (timer.current) {
+            clearTimeout(timer.current)
+            timer.current = null
         }
         if (isPaused) play()
     }
@@ -58,6 +56,6 @@ const Screen = ({next,back,pause,play}) => {
             <RightButton onClick={()=>clickHandler('next')}/>
         </ScreenContainer>
     )
-}
+})
 
 export default Screen

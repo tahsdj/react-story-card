@@ -40,11 +40,12 @@ const StoryContent = styled.img`
     margin: auto  
 `
 
-const Story = ({
+const Story = React.memo(({
     author,
     imgUrl
 }) => {
     const {name, profileImg} = author ? author : {name: null, profileImg: null}
+    console.log('story render')
     return (
         <StroyWrapper>
             <ProfileWrapper>
@@ -54,6 +55,6 @@ const Story = ({
             <StoryContent src={imgUrl} />
         </StroyWrapper>
     )
-}
+})
 
 export default Story

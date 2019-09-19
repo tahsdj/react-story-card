@@ -10,12 +10,10 @@ const HeaderWrapper = styled.header`
     justify-content: space-between;
 `
 
-const Header = ({stories, storyIndex, isPlaying, duration, durationPerStory}) => (
+const Header = React.memo(({stories, storyIndex, isPlaying}) => (
     <HeaderWrapper>
         { stories.map( (val,index) => {
             const currentIndex = storyIndex
-            // const percentage = ((duration%durationPerStory)/durationPerStory)*100
-            // console.log('percentage: ', percentage)
                 switch (true) {
                     case index < currentIndex:
                         return <Bar type={1} />
@@ -28,7 +26,7 @@ const Header = ({stories, storyIndex, isPlaying, duration, durationPerStory}) =>
                 }
         })}
     </HeaderWrapper>
-)
+))
 export default Header
 
 

@@ -16,20 +16,16 @@ const ContainerWrapper = styled.div`
 const Container = ({
     stories, 
     storyIndex,
-    duration,
-    isPlaying,
-    durationPerStory
+    isPlaying
 }) => {
     const currentStory = stories[storyIndex]
     // console.log('redenr container')
     return (
         <ContainerWrapper>
             <Header 
-                stories={stories} 
-                duration={duration}
+                stories={stories}
                 storyIndex={storyIndex}
                 isPlaying={isPlaying}
-                durationPerStory={durationPerStory}
                 />
             <Story {...currentStory} />
         </ContainerWrapper>
