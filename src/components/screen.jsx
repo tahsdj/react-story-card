@@ -1,6 +1,5 @@
 import React, {useState, useRef} from "react"
 import styled from 'styled-components'
-import { setInterval } from "timers";
 
 const ScreenContainer = styled.div`
     position: absolute;
@@ -31,7 +30,7 @@ const Screen = React.memo(({next,back,pause,play}) => {
         timer.current = setTimeout(()=>{
                 setPause(true)
                 pause()
-            },300)
+            },200)
     }
     const pressUpHandler = e => {
         if (timer.current) {

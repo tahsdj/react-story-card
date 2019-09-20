@@ -41,11 +41,11 @@ const StoryContent = styled.img`
 `
 
 const Story = React.memo(({
-    author,
+    user,
     imgUrl
 }) => {
-    const {name, profileImg} = author ? author : {name: null, profileImg: null}
-    console.log('story render')
+    const {name, profileImg} = user ? user : {name: null, profileImg: null}
+    // console.log('story render')
     return (
         <StroyWrapper>
             <ProfileWrapper>

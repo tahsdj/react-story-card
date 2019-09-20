@@ -6,23 +6,29 @@ import Screen from './components/screen'
 const StoryCardWrapper = styled.div`
     display: inline-flex;
     position: relative;
-    width: 400px;
-    height: 100vh;
-    max-width: 100vw;
+    width: ${props => props.width ? `${isNaN(parseInt((props.width + '').split('')[(props.width + '').split('').length - 1])) ? props.width:`${parseInt(props.width)}px`}` : '400px'};
+    height: ${props => props.height ? `${isNaN(parseInt((props.height + '').split('')[(props.height + '').split('').length - 1]))? props.height:`${parseInt(props.height)}px`}` : '650px'};
+    min-height: 500px;
+    max-width: 500px;
     max-height: 100vh;
-    border: 1px solid gray;
+    box-shadow: 3px 3px 5px rgba(0,0,0,.26)
 `
 
-const StoryCard = ({stories}) => {
+const StoryCard = ({
+    stories = [],
+    interval = 3000,
+    width = 300,
+    height = 500,
+    onChange=null}) => {
 
-    // const [isPlaying, setPlaying] = useState(true)
     const [durationState, setDurationState] = useState({
         storyIndex: -1,
         duration: -1,
         isPlaying: true
     })
-    const {storyIndex, duration, isPlaying} = durationState
-    const durationPerStory = 3
+
+    const {storyIndex, isPlaying} = durationState
+    const intervalPerStory = interval / 1000
 
     useEffect(()=>{
         
@@ -35,11 +41,10 @@ const StoryCard = ({stories}) => {
             if (timer) clearInterval(timer)
         }
     },[])
-    // console.log('=================== render ====================')
-    // console.log('duration: ', duration)
-    // console.log('index: ', storyIndex)
-    // console.log('=================== ====== ====================')
-
+    
+    const useCallBack = (func, event) => {
+        if (func && typeof func === 'function') func(event)
+    }
     const timerHandler = (delay) => {
         setDurationState( prev => {
             const {duration, storyIndex} = prev
@@ -50,9 +55,13 @@ const StoryCard = ({stories}) => {
 
             if ( prev.isPlaying ) {
                 // if in one cycle, keep counting on timer
-                if ( (duration + increasement) < stories.length*durationPerStory) {
+                if ( (duration + increasement) < stories.length*intervalPerStory) {
                     // if it will change to next story
-                    if ( Math.floor((duration + increasement) / durationPerStory) > Math.floor(duration / durationPerStory) ){
+                    if ( Math.floor((duration + increasement) / intervalPerStory) > Math.floor(duration / intervalPerStory) ){
+                        
+                        // call the function when the story is changed
+                        const event = { event: 'changed'}
+                        useCallBack(onChange, event)
                         return { ...prev, storyIndex: storyIndex+1, duration: duration + increasement}
                     } else {
                         // default, increase the timer
@@ -67,27 +76,41 @@ const StoryCard = ({stories}) => {
     }
 
     const next = () => setDurationState(prev=>{
-        const newDuration = (prev.storyIndex+1)*durationPerStory
+        const newDuration = (prev.storyIndex+1)*intervalPerStory
         return prev.storyIndex === stories.length - 1 ? 
             {...prev, duration: 0, storyIndex: 0} : {...prev, duration: newDuration, storyIndex: prev.storyIndex+1}
     })
     const back = () => setDurationState(prev=>{
-        const newDuration = (prev.storyIndex-1)*durationPerStory
+        const newDuration = (prev.storyIndex-1)*intervalPerStory
         return prev.storyIndex === 0 ? 
             {...prev} : {...prev, duration: newDuration, storyIndex: prev.storyIndex-1}
     })
 
-    const pause = () => setDurationState( prev => ({...prev, isPlaying: false}) )
-    const play = () => setDurationState( prev => ({...prev, isPlaying: true}) )
+    const pause = () => setDurationState( prev => {
+        const event = {
+            event: 'pause'
+        }
+        useCallBack(onChange, event)
+        return {...prev, isPlaying: false} 
+    })
+    const play = () => setDurationState( prev => {
+        const event = {
+            event: 'play'
+        }
+        useCallBack(onChange, event)
+        return {...prev, isPlaying: true} 
+    })
 
     return (
-        <StoryCardWrapper>
+        <StoryCardWrapper 
+            width={width}
+            height={height}
+            >
             <Container
                 stories={stories}
                 storyIndex={storyIndex}
-                duration={duration}
                 isPlaying={isPlaying}
-                durationPerStory={durationPerStory}
+                intervalPerStory={intervalPerStory}
             />
             <Screen
                 next={next}

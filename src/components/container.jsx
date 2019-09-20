@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React from "react"
 import styled from 'styled-components'
 import Story from "./story"
 import Header from './header'
@@ -13,24 +13,26 @@ const ContainerWrapper = styled.div`
     flex-direction: column;
 `
 
-const Container = ({
+const Container = React.memo(({
     stories, 
     storyIndex,
-    isPlaying
+    isPlaying,
+    intervalPerStory
 }) => {
     const currentStory = stories[storyIndex]
-    // console.log('redenr container')
+    console.log('render container')
     return (
         <ContainerWrapper>
             <Header 
                 stories={stories}
                 storyIndex={storyIndex}
                 isPlaying={isPlaying}
+                intervalPerStory={intervalPerStory}
                 />
             <Story {...currentStory} />
         </ContainerWrapper>
     )
-}
+})
 
 export default Container
 
